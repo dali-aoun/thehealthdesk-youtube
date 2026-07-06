@@ -87,12 +87,24 @@ def generate_thumbnail(headline: str, product: str, out_path: Path):
 
     # brand strip top-right
     draw.rectangle([900, 0, 1280, 60], fill=BRAND_GREEN)
-    try:
-        font_sm = ImageFont.truetype("C:/Windows/Fonts/arialbd.ttf", 26)
-        font_lg = ImageFont.truetype("C:/Windows/Fonts/arialbd.ttf", 68)
-        font_md = ImageFont.truetype("C:/Windows/Fonts/arial.ttf", 34)
-    except OSError:
-        font_sm = font_lg = font_md = ImageFont.load_default()
+    font_candidates_bold = [
+        "C:/Windows/Fonts/arialbd.ttf",
+        "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+        "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf",
+    ]
+    font_candidates_reg = [
+        "C:/Windows/Fonts/arial.ttf",
+        "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+        "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf",
+    ]
+    def _load(candidates, size):
+        for p in candidates:
+            try: return ImageFont.truetype(p, size)
+            except OSError: continue
+        return ImageFont.load_default()
+    font_sm = _load(font_candidates_bold, 26)
+    font_lg = _load(font_candidates_bold, 68)
+    font_md = _load(font_candidates_reg, 34)
 
     draw.text((910, 12), "THE HEALTH DESK", font=font_sm, fill=WHITE)
 
@@ -190,9 +202,12 @@ def assemble_video(video_path: Path, audio_path: Path, srt_path: Path, out_path:
 
 def _caption_clip(txt: str):
     from PIL import Image as PILImage, ImageDraw as PILDraw, ImageFont as PILFont
-    try:
-        fnt = PILFont.truetype("C:/Windows/Fonts/arialbd.ttf", 52)
-    except OSError:
+    for p in ["C:/Windows/Fonts/arialbd.ttf",
+              "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+              "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf"]:
+        try: fnt = PILFont.truetype(p, 52); break
+        except OSError: continue
+    else:
         fnt = PILFont.load_default()
     wrapped = textwrap.wrap(txt, width=22)
     img = PILImage.new("RGBA", (VIDEO_W, 180), (0, 0, 0, 0))
