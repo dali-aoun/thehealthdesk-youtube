@@ -264,12 +264,15 @@ def upload_to_youtube(video: dict, video_path: Path, thumbnail_path: Path):
     video_id = response["id"]
     print(f"  ✓ Uploaded: https://youtube.com/shorts/{video_id}")
 
-    # set thumbnail
-    yt.thumbnails().set(
-        videoId=video_id,
-        media_body=MediaFileUpload(str(thumbnail_path), mimetype="image/jpeg"),
-    ).execute()
-    print(f"  ✓ Thumbnail set")
+    # set thumbnail (requires verified YouTube account — skip if forbidden)
+    try:
+        yt.thumbnails().set(
+            videoId=video_id,
+            media_body=MediaFileUpload(str(thumbnail_path), mimetype="image/jpeg"),
+        ).execute()
+        print(f"  OK Thumbnail set")
+    except Exception as e:
+        print(f"  WARN Thumbnail skipped ({e})")
 
     return video_id
 
