@@ -177,8 +177,9 @@ def assemble_video(video_path: Path, audio_path: Path, srt_path: Path, out_path:
     video = colorx(video, 0.55)
 
     # add branded overlay (top bar)
+    import numpy as np
     overlay = Image.new("RGBA", (VIDEO_W, 90), (*BRAND_GREEN, 230))
-    overlay_clip = ImageClip(overlay).set_duration(duration).set_position(("center", 0))
+    overlay_clip = ImageClip(np.array(overlay)).set_duration(duration).set_position(("center", 0))
 
     # burn captions
     try:
@@ -221,7 +222,8 @@ def _caption_clip(txt: str):
         d.text((x + 2, y + 2), line, font=fnt, fill=(0, 0, 0, 200))
         d.text((x, y), line, font=fnt, fill=(255, 255, 255, 255))
         y += 64
-    return ImageClip(img).set_duration(0.1)
+    import numpy as np
+    return ImageClip(np.array(img)).set_duration(0.1)
 
 
 # ── 6. Upload to YouTube ───────────────────────────────────────────────────────
