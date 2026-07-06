@@ -25,7 +25,9 @@ jobs:
         run: sudo apt-get install -y ffmpeg
 
       - name: Install Python deps
-        run: pip install -r requirements.txt
+        run: |
+          pip install --upgrade pip setuptools wheel
+          pip install -r requirements.txt
 
       - name: Download Whisper model
         run: python -c "import whisper; whisper.load_model('base')"
