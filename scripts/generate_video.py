@@ -2,7 +2,8 @@
 The Health Desk — YouTube Shorts Automation
 Free stack: edge-tts + Pexels + moviepy + Pillow + Whisper + YouTube API
 """
-import os, json, asyncio, subprocess, textwrap, requests, whisper
+import os, json, asyncio, subprocess, textwrap, requests
+from faster_whisper import WhisperModel
 from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
 import edge_tts
@@ -117,14 +118,14 @@ def generate_thumbnail(headline: str, product: str, out_path: Path):
 
 # ── 4. Auto-captions via Whisper ───────────────────────────────────────────────
 def generate_srt(audio_path: Path, srt_path: Path):
-    model = whisper.load_model("base")
-    result = model.transcribe(str(audio_path), word_timestamps=True)
+    model = WhisperModel("base", device="cpu", compute_type="int8")
+    segments, _ = model.transcribe(str(audio_path))
     lines = []
     idx = 1
-    for seg in result["segments"]:
-        start = _fmt_time(seg["start"])
-        end   = _fmt_time(seg["end"])
-        text  = seg["text"].strip()
+    for seg in segments:
+        start = _fmt_time(seg.start)
+        end   = _fmt_time(seg.end)
+        text  = seg.text.strip()
         lines.append(f"{idx}\n{start} --> {end}\n{text}\n")
         idx += 1
     srt_path.write_text("\n".join(lines), encoding="utf-8")
