@@ -274,7 +274,13 @@ async def process_video(video: dict):
     print(f"{'='*50}")
 
     print("\n[1/6] Generating voiceover...")
-    await generate_voiceover(video["voiceover_script"], voiceover_path)
+    prebuilt = BASE_DIR / "assets" / "voiceovers" / f"{vid_id}.mp3"
+    if prebuilt.exists():
+        import shutil
+        shutil.copy(prebuilt, voiceover_path)
+        print(f"  OK voiceover (pre-built): {voiceover_path.name}")
+    else:
+        await generate_voiceover(video["voiceover_script"], voiceover_path)
 
     print("\n[2/6] Downloading stock footage...")
     ok = download_pexels_video(video["pexels_query"], footage_path)
