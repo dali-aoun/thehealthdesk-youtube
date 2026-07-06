@@ -1,0 +1,47 @@
+name: Publish YouTube Short
+
+on:
+  schedule:
+    # Mon–Fri at 09:00 UTC (10:00 Paris / 10:00 Tunisia)
+    - cron: "0 9 * * 1-5"
+  workflow_dispatch:   # allow manual trigger from GitHub UI
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install FFmpeg
+        run: sudo apt-get install -y ffmpeg
+
+      - name: Install Python deps
+        run: pip install -r requirements.txt
+
+      - name: Download Whisper model
+        run: python -c "import whisper; whisper.load_model('base')"
+
+      - name: Generate & upload Short
+        env:
+          PEXELS_API_KEY:   ${{ secrets.PEXELS_API_KEY }}
+          YT_CLIENT_ID:     ${{ secrets.YT_CLIENT_ID }}
+          YT_CLIENT_SECRET: ${{ secrets.YT_CLIENT_SECRET }}
+          YT_REFRESH_TOKEN: ${{ secrets.YT_REFRESH_TOKEN }}
+        run: python scripts/generate_video.py
+
+      - name: Commit updated videos.json (mark published)
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add videos.json
+          git diff --staged --quiet || git commit -m "chore: mark short as published [skip ci]"
+          git push
