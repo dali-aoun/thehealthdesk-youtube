@@ -52,7 +52,7 @@
     },
     {
       "id": "short_003",
-      "status": "pending",
+      "status": "published",
       "product": "ProDentim",
       "category_slug": "dental-health",
       "product_slug": "prodentim",
@@ -69,7 +69,8 @@
         "oral probiotic supplement",
         "bad breath after 50",
         "health desk review"
-      ]
+      ],
+      "youtube_id": "_hHpZCXfBLs"
     },
     {
       "id": "short_004",
