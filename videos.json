@@ -74,7 +74,7 @@
     },
     {
       "id": "short_004",
-      "status": "pending",
+      "status": "published",
       "product": "Yu Sleep",
       "category_slug": "sleep",
       "product_slug": "yu-sleep",
@@ -91,7 +91,8 @@
         "sleep supplement adults 45 plus",
         "waking up at 3am solution",
         "health desk review"
-      ]
+      ],
+      "youtube_id": "ZE7LDATNdt4"
     },
     {
       "id": "short_005",
